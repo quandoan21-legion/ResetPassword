@@ -6,6 +6,8 @@ use Users\Models\UserModels as UserModels;
 
 class UserControllers
 {
+    public $prefix = WILOKE_JWT_CLIENT_PREFIX;
+
     public function __construct()
     {
         add_action('rest_api_init', [$this, 'registerRouters']);
@@ -14,8 +16,8 @@ class UserControllers
     public function registerRouters()
     {
         register_rest_route(
-            "WILOKE_RUP_API",
-            'reset_password',
+            WILOKE_JWT_CLIENT_API,
+            '/me/reset-password',
             [
                 'methods'             => 'POST',
                 'callback'            => [$this, 'changingPassword'],
@@ -23,18 +25,26 @@ class UserControllers
             ]
         );
     }
-    public function changingPassword() : string
+    public function changingPassword(\WP_REST_Request $oRequest) 
     {
+
+        $vars = $oRequest->get_params();
+        $newPassword        = $vars['new_password'];
+        $comfirmNewPassword = $vars['confirm_new_password'];
         $oModels            = new UserModels();
-        $newPassword        = $_POST['new_password'];
-        $comfirmNewPassword = $_POST['comfirm_new_password'];
-        if ($oModels->checkingPassword()) {
+        if ($oModels->checkingPassword($comfirmNewPassword)) {
             if ($newPassword === $comfirmNewPassword) {
                 return $oModels->changeUserPassword($newPassword);
             }
-            return "2 new passwords is not identical";
+            return [
+                'msg'    => 'The old and new password must not be the same ',
+                'status' => '400 BAD REQUEST',
+            ];
         } else {
-            return "Your current password is not match ";
+            return [
+                'msg'    => 'The current password is incorrect',
+                'status' => '400 BAD REQUEST',
+            ];
         }
     }
 }
