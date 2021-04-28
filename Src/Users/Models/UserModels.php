@@ -17,10 +17,11 @@ class UserModels
     public function changeUserPassword(string $newPassword)
     {
         if ($newPassword == $_POST['current_password']) {
-            Response::response([
-                'msg'    => esc_html('Your new password is the same with your old password. Please choose a different password'),
-                'Status' => 400,
-            ]);
+            return new \WP_REST_Response([
+                'error' =>  [
+                    'msg' => 'SAME PASSWORD'
+                ]
+                ], 400);
         } else {
             wp_set_password($newPassword, $this->currentUserId);
             Response::response([

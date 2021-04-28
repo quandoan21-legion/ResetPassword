@@ -30,6 +30,7 @@ class UserControllers
     {
 
         $vars = $oRequest->get_params();
+        // var_dump($vars);die;
         $currentPassword        = $vars['current_password'];
         $newPassword        = $vars['new_password'];
         $comfirmNewPassword = $vars['confirm_new_password'];
