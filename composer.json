@@ -1,7 +1,8 @@
 {
   "autoload": {
     "psr-4": {
-      "Users\\": "Src/Users/"
+      "Users\\": "Src/Users/",
+      "Src\\": "Src/"
     }
   }
 }

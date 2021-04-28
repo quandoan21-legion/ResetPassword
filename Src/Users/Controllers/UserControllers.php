@@ -2,6 +2,7 @@
 
 namespace Users\Controllers;
 
+use Src\Response as Response;
 use Users\Models\UserModels as UserModels;
 
 class UserControllers
@@ -25,26 +26,29 @@ class UserControllers
             ]
         );
     }
-    public function changingPassword(\WP_REST_Request $oRequest) 
+    public function changingPassword(\WP_REST_Request $oRequest)
     {
 
         $vars = $oRequest->get_params();
+        $currentPassword        = $vars['current_password'];
         $newPassword        = $vars['new_password'];
         $comfirmNewPassword = $vars['confirm_new_password'];
         $oModels            = new UserModels();
-        if ($oModels->checkingPassword($comfirmNewPassword)) {
+        // return $oModels->checkingPassword($currentPassword); 
+        if ($oModels->checkingPassword($currentPassword)) {
             if ($newPassword === $comfirmNewPassword) {
-                return $oModels->changeUserPassword($newPassword);
+                $oModels->changeUserPassword($newPassword);
+            } else {
+                Response::response([
+                    'msg'    => esc_html('The old and new password must not be the same '),
+                    'Status' => 400,
+                ]);
             }
-            return [
-                'msg'    => 'The old and new password must not be the same ',
-                'status' => '400 BAD REQUEST',
-            ];
         } else {
-            return [
-                'msg'    => 'The current password is incorrect',
-                'status' => '400 BAD REQUEST',
-            ];
+            Response::response([
+                'msg'    => esc_html('The current password is incorrect'),
+                'Status' => 400,
+            ]);
         }
     }
 }

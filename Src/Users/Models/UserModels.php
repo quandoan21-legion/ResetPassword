@@ -2,8 +2,7 @@
 
 namespace Users\Models;
 
-use JsonSerializable;
-use PhpMyAdmin\Plugins\Export\ExportJson;
+use Src\Response as Response;
 
 class UserModels
 {
@@ -18,20 +17,16 @@ class UserModels
     public function changeUserPassword(string $newPassword)
     {
         if ($newPassword == $_POST['current_password']) {
-            $this->error([
+            Response::response([
                 'msg'    => esc_html('Your new password is the same with your old password. Please choose a different password'),
-                'status' => 400,
+                'Status' => 400,
             ]);
         } else {
             wp_set_password($newPassword, $this->currentUserId);
-            $a=[
-                'msg'    => 'changed password',
-                'status' => '200 OK',
-            ];
+            Response::response([
+                'msg'    => esc_html('Changed Password'),
+                'Status' => 200,
+            ]);
         }
-    }
-    function error(array $aAttrs = [])  
-    {
-        return json_encode($aAttrs);
     }
 }
